@@ -1,5 +1,6 @@
 package tests;
 
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 
@@ -35,7 +36,7 @@ public class SelenoidTests {
     }
 
     @Test
-    void checkTotalBadPractice(){
+    void checkTotalBadPractice() {
         String response = get("https://selenoid.autotests.cloud/status")
                 .then()
                 .extract().response().asString();
@@ -48,8 +49,9 @@ public class SelenoidTests {
                 "\"98.0\":{}},\"opera\":{\"84.0\":{},\"85.0\":{}}}}\n";
         assertEquals(expectedResponse, response);
     }
+
     @Test
-    void checkTotalGoodPractice(){
+    void checkTotalGoodPractice() {
         Integer response = get("https://selenoid.autotests.cloud/status")
                 .then()
                 .extract().path("total");
@@ -58,6 +60,35 @@ public class SelenoidTests {
 
         Integer expectedResponse = 20;
         assertEquals(expectedResponse, response);
+    }
+
+    @Test
+    void responseExamples() {
+        Response response = get("https://selenoid.autotests.cloud/status")
+                .then()
+                .extract().response();
+
+        System.out.println("1. Response: " + response);
+        System.out.println("2. Response: " + response.toString());
+        System.out.println("3. Response: " + response.asString());
+        System.out.println("4. Response: " + response.path("total"));
+        System.out.println("5. Response: " + response.path("browsers.chrome"));
+    }
+
+    @Test
+    void checkStatus200() {
+        get("https://user1:1234@selenoid.autotests.cloud/wd/hub/status")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    void checkStatus200WithAuth() {
+        given()
+                .auth().basic("user1", "1234")
+                .get("https://selenoid.autotests.cloud/wd/hub/status")
+                .then()
+                .statusCode(200);
     }
 
 }
